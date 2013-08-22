@@ -1,3 +1,4 @@
+<!DOCTYPE HTML>
 <html>
   <head>
 
@@ -8,6 +9,11 @@
 
     <!-- load script to include controls for panning and zooming -->
     <script src="./three.js/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- incorporating LaTeX for some nice axes labels -->
+    <script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
 
     <style type="/text/css">
       body {
@@ -68,6 +74,8 @@
         return new THREE.Vector3(x, y, z);
       }
 
+      // text functions for axes labelling, taken from BasicsOfThreeJS
+
       function createTextCanvas(text, color, font, size) {
           size = size || 24;
           var canvas = document.createElement('canvas');
@@ -110,6 +118,11 @@
       var axLines = new THREE.Line(axGeo, axMat);
       axLines.type = THREE.Lines;
       scatterPlot.add(axLines);
+
+      //test text with latex
+      var titleX = createText2D('$1000 h^{-1} Mpc$');
+      titleX.position.x = -1000;
+      scatterPlot.add(titleX);
 
       // set up resolution parameters for circular parts of axes
       var circRes = 3600;
