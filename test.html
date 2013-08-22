@@ -3,7 +3,7 @@
 
     <title>CMASS data</title>
 
-    <script src="three.js/build/three.js"></script>
+    <script src="./three.js/build/three.js"></script>
 
     <style type="/text/css">
       body {
@@ -27,7 +27,7 @@
       // set scene dimensions
       var WIDTH = window.innerWidth,
           HEIGHT = window.innerHeight;
-      var ASPECT = WIDTH/HEIGHT;
+      var ASPECT = WIDTH / HEIGHT;
 
       // set up renderer
       var renderer = new THREE.WebGLRenderer({antialias: true});
@@ -38,7 +38,7 @@
 
 
       // get the camera set up
-      var camera = new THREE.PerspectiveCamera( 60, ASPECT, 1, 10000 );
+      var camera = new THREE.PerspectiveCamera(60, ASPECT, 1, 10000);
       camera.position.set(0, 0, 5000);
 
       // set the scene
@@ -53,14 +53,16 @@
       // build the coordinate reference axes
 
       scatterPlot.rotation.y = 0.5;
-      function v(x,y,z){ return new THREE.Vertex(new THREE.Vector3(x,y,z)); }
+      function v(x, y, z) {
+        return new THREE.Vertex(new THREE.Vector3(x, y, z));
+      }
 
       var lineGeo = new THREE.Geometry();
       lineGeo.vertices.push(
           // orthogonal axes
           v(-3000, 0, 0), v(3000, 0, 0),
           v(0, -3000, 0), v(0, 3000, 0),
-          v(0, 0, -3000), v(0, 0, 3000),
+          v(0, 0, -3000), v(0, 0, 3000)
           );
 
       var lineMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
