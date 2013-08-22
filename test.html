@@ -45,6 +45,8 @@
       renderer.setClearColor( 0x000000, 1 );
       renderer.setSize( WIDTH, HEIGHT);
 
+      document.body.appendChild(renderer.domElement);
+
       function render() {
           renderer.render( scene, camera );
       }
@@ -79,8 +81,6 @@
       line.type = THREE.Lines;
       scatterPlot.add(line);
 
-      var container = document.getElementById( 'container' );
-      container.appendChild( renderer.domElement );
 
       function animate() {
           requestAnimationFrame( animate );
