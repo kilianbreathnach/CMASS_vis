@@ -68,18 +68,73 @@
         return new THREE.Vertex(new THREE.Vector3(x, y, z));
       }
 
-      var lineGeo = new THREE.Geometry();
-      lineGeo.vertices.push(
+      function createTextCanvas(text, color, font, size) {
+          size = size || 24;
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var fontStr = (size + 'px ') + (font || 'Arial');
+          ctx.font = fontStr;
+          var w = ctx.measureText(text).width;
+          var h = Math.ceil(size);
+          canvas.width = w;
+          canvas.height = h;
+          ctx.font = fontStr;
+          ctx.fillStyle = color || 'black';
+          ctx.fillText(text, 0, Math.ceil(size*0.8));
+          return canvas;
+      }
+
+      function createText2D(text, color, font, size, segW, segH) {
+          var canvas = createTextCanvas(text, color, font, size);
+          var plane = new THREE.PlaneGeometry(canvas.width, canvas.height, segW, segH);
+          var tex = new THREE.Texture(canvas);
+          tex.needsUpdate = true;
+          var planeMat = new THREE.MeshBasicMaterial({
+              map: tex, color: 0xffffff, transparent: true
+          });
+          var mesh = new THREE.Mesh(plane, planeMat);
+          mesh.scale.set(0.25, 0.25, 0.25);
+          mesh.doubleSided = true;
+          return mesh;
+      }
+
+      var axGeo = new THREE.Geometry();
+      axGeo.vertices.push(
           // orthogonal axes
           v(-3000, 0, 0), v(3000, 0, 0),
           v(0, -3000, 0), v(0, 3000, 0),
           v(0, 0, -3000), v(0, 0, 3000)
           );
 
-      var lineMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
-      var line = new THREE.Line(lineGeo, lineMat);
-      line.type = THREE.Lines;
-      scatterPlot.add(line);
+      var axMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
+      var axLines = new THREE.Line(axGeo, axMat);
+      axLines.type = THREE.Lines;
+      scatterPlot.add(axLines);
+
+      // set up resolution parameters for circular parts of axes
+      var circRes = 3600;
+      var circSize = 360 / circRes;
+      var segment;
+
+      // equatorial circles
+
+      var horiRads = [1000, 2000, 3000];
+      var horiCircGeo, horiCircMat, horiCircLine;
+
+      for (var rad = 0; rad < horiRads.length; rad++) {
+
+          horiCircGeo = new THREE.Geometry();
+
+          for (var i = 0; i <= circRes; i++) {
+              segment = ( i * size ) * Math.PI / 180;
+              horiCircGeo.vertices.push(new THREE.Vertex(new THREE.Vector3(Math.cos(segment) * amplitude, Math.sin(segment) * amplitude, 0)));
+          }
+
+          horiCircMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
+          horiCircLine = new THREE.Line(horiCircGeo, horiCircMat);
+          scatterPlot.add(horiCircLine);
+
+      }
 
 
       function animate() {
