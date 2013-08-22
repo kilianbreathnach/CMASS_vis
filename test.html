@@ -126,8 +126,8 @@
           horiCircGeo = new THREE.Geometry();
 
           for (var i = 0; i <= circRes; i++) {
-              segment = ( i * size ) * Math.PI / 180;
-              horiCircGeo.vertices.push(new THREE.Vertex(new THREE.Vector3(Math.cos(segment) * amplitude, Math.sin(segment) * amplitude, 0)));
+              segment = ( i * circSize ) * Math.PI / 180;
+              horiCircGeo.vertices.push(new THREE.Vertex(new THREE.Vector3(Math.cos(segment) * horiRads[i], Math.sin(segment) * horiRads[i], 0)));
           }
 
           horiCircMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
