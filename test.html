@@ -22,6 +22,9 @@
       <source src="./choons.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- load script to include controls for panning and zooming -->
+    <script src="three.js/examples/js/controls/OrbitControls.js"></script>
+
     <script>
 
       // set scene dimensions
@@ -29,17 +32,13 @@
           HEIGHT = window.innerHeight;
       var ASPECT = WIDTH / HEIGHT;
 
-      // set up renderer
-      var renderer = new THREE.WebGLRenderer({antialias: true});
-      renderer.setSize(WIDTH, HEIGHT);
-      document.body.appendChild(renderer.domElement);
-
-      renderer.setClearColorHex(0x000000, 1.0);
-
-
       // get the camera set up
       var camera = new THREE.PerspectiveCamera(60, ASPECT, 1, 10000);
       camera.position.set(0, 0, 5000);
+
+      // get the controls going
+      var controls = new THREE.OrbitControls( camera );
+      controls.addEventListener( 'change', render );
 
       // set the scene
       var scene = new THREE.Scene();
@@ -70,7 +69,20 @@
       line.type = THREE.Lines;
       scatterPlot.add(line);
 
-      renderer.render(scene, camera);
+      // and finally render
+      var renderer = new THREE.WebGLRenderer( { antialias: false } );
+      renderer.setClearColor( 0x000000, 1 );
+      renderer.setSize( WIDTH, HEIGHT);
+
+      var container = document.getElementById( 'container' );
+      container.appendChild( renderer.domElement );
+
+
+      // Function definitions from the misc_controls_orbit example
+
+      function render() {
+          renderer.render( scene, camera );
+      }
 
 
 
