@@ -1,23 +1,176 @@
 <html>
   <head>
-    <script src="three.js/build/three.js"></script>
-    <style type="text/css">
+
+    <title>CMASS data</title>
+
+    <style type="/text/css">
       body {
+        background-color: #000000;
         margin: 0px;
-        padding: 0px;
-      }
+        }
     </style>
 
   </head>
 
   <body>
 
-    <h1>How do?</h1>
+    <!-- get some choons in here -->
+    <audio autoplay>
+      <!-- choons are Bela Bartok's Mikrokosmos Nos 97-153 -->
+      <source src="./choons.mp3" type="audio/mpeg">
+    </audio>
 
+    <!-- Detect whether user can run webgl -->
+    <script src="three.js/examples/js/Detector.js"></script>
+
+    <!-- load library to use three.jsi -->
+    <script src="three.js/build/three.js"></script>
+
+    <!-- load script to include controls for panning and zooming -->
+    <script src="three.js/examples/js/controls/OrbitControls.js"></script>
+
+
+    <!-- load the galaxy location (x,y,z) data to a json array named "cart" -->
+    <script type="text/javascript" src="short.json"></script>
+
+
+    <!-- ...and here we go -->
+    <script type="text/javascript">
+
+      // warn user that they don't got no WebGL
+      if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+      // grab galaxies
+      var gals = cart;
+
+      // set all the variable names
+      var container, stats;
+      var camera, controls, scene, renderer;
+      var cross;
+
+      var scatterPlot, lineGeo;
+      var lineMat, line;
+
+      // set scene dimensions
+      var WIDTH = window.innerWidth,
+          HEIGHT = window.innerHeight;
+      var ASPECT = WIDTH/HEIGHT;
+
+
+      // Run the whole show in this next block
+
+
+      // get the camera set up
+      camera = new THREE.PerspectiveCamera( 60, ASPECT, 1, 10000 );
+      camera.position.set(0, 0, 5000);
+
+      // get the controls going
+      controls = new THREE.OrbitControls( camera );
+      controls.addEventListener( 'change', render );
+
+      // set the scene
+      scene = new THREE.Scene();
+
+      // BEGIN PLOTTING
+
+      scatterPlot = new THREE.Object3D();
+      scene.add(scatterPlot);
+
+      // build the coordinate reference axes
+
+      var axcolour = new THREE.Color("rgb(0, 255, 0)");
+
+      scatterPlot.rotation.y = 0.5;
+      function v(x,y,z){ return new THREE.Vertex(new THREE.Vector3(x,y,z)); }
+
+      lineGeo = new THREE.Geometry();
+      lineGeo.vertices.push(
+          // axes
+          v(-3000, 0, 0), v(3000, 0, 0),
+          v(0, -3000, 0), v(0, 3000, 0),
+          v(0, 0, -3000), v(0, 0, 3000),
+          );
+
+      lineMat = new THREE.LineBasicMaterial({color: axcolour, lineWidth: 1});
+      line = new THREE.Line(lineGeo, lineMat);
+      line.type = THREE.Lines;
+      scatterPlot.add(line);
+
+
+
+      // and add the galaxy points
+
+
+      // and finally render
+      renderer = new THREE.WebGLRenderer( { antialias: false } );
+      renderer.setClearColor( 0x000000, 1 );
+      renderer.setSize( WIDTH, HEIGHT);
+
+      container = document.getElementById( 'container' );
+      container.appendChild( renderer.domElement );
+
+
+      // something from the example (?)
+      window.addEventListener( 'resize', onWindowResize, false );
+
+
+      animate();
+
+      // Function definitions from the misc_controls_orbit example
+
+      function onWindowResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          render();
+      }
+
+      function animate() {
+          requestAnimationFrame( animate );
+          controls.update();
+      }
+
+      function render() {
+          renderer.render( scene, camera );
+      }
+
+
+      // Functions from BasicsOfThreeJS
+
+      function createTextCanvas(text, color, font, size) {
+          size = size || 24;
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var fontStr = (size + 'px ') + (font || 'Arial');
+          ctx.font = fontStr;
+          var w = ctx.measureText(text).width;
+          var h = Math.ceil(size);
+          canvas.width = w;
+          canvas.height = h;
+          ctx.font = fontStr;
+          ctx.fillStyle = color || 'black';
+          ctx.fillText(text, 0, Math.ceil(size*0.8));
+          return canvas;
+      }
+
+      function createText2D(text, color, font, size, segW, segH) {
+          var canvas = createTextCanvas(text, color, font, size);
+          var plane = new THREE.PlaneGeometry(canvas.width, canvas.height, segW, segH);
+          var tex = new THREE.Texture(canvas);
+          tex.needsUpdate = true;
+          var planeMat = new THREE.MeshBasicMaterial({
+              map: tex, color: 0xffffff, transparent: true
+          });
+          var mesh = new THREE.Mesh(plane, planeMat);
+          mesh.scale.set(0.25, 0.25, 0.25);
+          mesh.doubleSided = true;
+          return mesh;
+      }
+
+
+    </script>
 
   </body>
-
-
 
 
 </html>
