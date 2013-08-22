@@ -3,7 +3,11 @@
 
     <title>CMASS data</title>
 
+    <!-- load three.js library -->
     <script src="./three.js/build/three.js"></script>
+
+    <!-- load script to include controls for panning and zooming -->
+    <script src="three.js/examples/js/controls/OrbitControls.js"></script>
 
     <style type="/text/css">
       body {
@@ -22,9 +26,6 @@
       <source src="./choons.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- load script to include controls for panning and zooming -->
-    <script src="three.js/examples/js/controls/OrbitControls.js"></script>
-
     <script>
 
       // set scene dimensions
@@ -32,16 +33,25 @@
           HEIGHT = window.innerHeight;
       var ASPECT = WIDTH / HEIGHT;
 
+      // set the scene
+      var scene = new THREE.Scene();
+
       // get the camera set up
       var camera = new THREE.PerspectiveCamera(60, ASPECT, 1, 10000);
       camera.position.set(0, 0, 5000);
 
+      // and finally render
+      var renderer = new THREE.WebGLRenderer( { antialias: false } );
+      renderer.setClearColor( 0x000000, 1 );
+      renderer.setSize( WIDTH, HEIGHT);
+
+      function render() {
+          renderer.render( scene, camera );
+      }
+
       // get the controls going
       var controls = new THREE.OrbitControls( camera );
       controls.addEventListener( 'change', render );
-
-      // set the scene
-      var scene = new THREE.Scene();
 
 
       // BEGIN PLOTTING
@@ -69,21 +79,15 @@
       line.type = THREE.Lines;
       scatterPlot.add(line);
 
-      // and finally render
-      var renderer = new THREE.WebGLRenderer( { antialias: false } );
-      renderer.setClearColor( 0x000000, 1 );
-      renderer.setSize( WIDTH, HEIGHT);
-
       var container = document.getElementById( 'container' );
       container.appendChild( renderer.domElement );
 
-
-      // Function definitions from the misc_controls_orbit example
-
-      function render() {
-          renderer.render( scene, camera );
+      function animate() {
+          requestAnimationFrame( animate );
+          controls.update();
       }
 
+      animate();
 
 
     </script>
