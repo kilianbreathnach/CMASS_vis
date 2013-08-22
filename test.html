@@ -52,8 +52,6 @@
 
       // build the coordinate reference axes
 
-      var axcolour = new THREE.Color("rgb(0, 255, 0)");
-
       scatterPlot.rotation.y = 0.5;
       function v(x,y,z){ return new THREE.Vertex(new THREE.Vector3(x,y,z)); }
 
@@ -65,7 +63,7 @@
           v(0, 0, -3000), v(0, 0, 3000),
           );
 
-      var lineMat = new THREE.LineBasicMaterial({color: axcolour, lineWidth: 1});
+      var lineMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
       var line = new THREE.Line(lineGeo, lineMat);
       line.type = THREE.Lines;
       scatterPlot.add(line);
