@@ -1,129 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>three.js webgl - orbit controls</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				color: #000;
-				font-family:Monospace;
-				font-size:13px;
-				text-align:center;
-				font-weight: bold;
 
-				background-color: #000;
-				margin: 0px;
-				overflow: hidden;
-			}
+  <head>
+    <title>CMASS data</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-		</style>
-	</head>
+    <style>
+      body {
+        background-color: #000;
+        margin: 0px;
+        overflow: hidden;
+        }
+    </style>
+  </head>
 
-	<body>
-		<div id="container"></div>
+  <body>
 
-		<script src="./three.js/build/three.min.js"></script>
+    <div id="container"></div>
 
-		<script src="./three.js/examples/js/controls/OrbitControls.js"></script>
+    <script src="./three.js/build/three.min.js"></script>
 
-		<script src="./three.js/examples/js/Detector.js"></script>
+    <script src="./three.js/examples/js/controls/OrbitControls.js"></script>
 
-		<script>
+    <script src="./three.js/examples/js/Detector.js"></script>
 
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
-			var container;
-
-			var camera, controls, scene, renderer;
-
-			var cross;
-
-			init();
-			animate();
-
-			function init() {
-
-				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
-				camera.position.z = 500;
-
-				controls = new THREE.OrbitControls( camera );
-				controls.addEventListener( 'change', render );
-
-				scene = new THREE.Scene();
-
-				// world
-
-				var geometry = new THREE.CylinderGeometry( 0, 10, 30, 4, 1 );
-				var material =  new THREE.MeshLambertMaterial( { color:0xffffff, shading: THREE.FlatShading } );
-
-				for ( var i = 0; i < 500; i ++ ) {
-
-					var mesh = new THREE.Mesh( geometry, material );
-					mesh.position.x = ( Math.random() - 0.5 ) * 1000;
-					mesh.position.y = ( Math.random() - 0.5 ) * 1000;
-					mesh.position.z = ( Math.random() - 0.5 ) * 1000;
-					mesh.updateMatrix();
-					mesh.matrixAutoUpdate = false;
-					scene.add( mesh );
-
-				}
+    <!-- incorporating LaTeX for some nice axes labels -->
+    <script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
 
 
-				// lights
+    <script>
 
-				light = new THREE.DirectionalLight( 0xffffff );
-				light.position.set( 1, 1, 1 );
-				scene.add( light );
+      if (! Detector.webgl) Detector.addGetWebGLMessage();
 
-				light = new THREE.DirectionalLight( 0x002288 );
-				light.position.set( -1, -1, -1 );
-				scene.add( light );
-
-				light = new THREE.AmbientLight( 0x222222 );
-				scene.add( light );
+      var WIDTH = window.innerWidth,
+          HEIGHT = window.innerHeight;
+      var ASPECT = WIDTH / HEIGHT;
 
 
-				// renderer
+      var container;
+      var camera, controls, scene, renderer;
+      var cross;
 
-				renderer = new THREE.WebGLRenderer( { antialias: false } );
-				renderer.setSize( window.innerWidth, window.innerHeight );
+      init();
+      animate();
 
-				container = document.getElementById( 'container' );
-				container.appendChild( renderer.domElement );
+      function init() {
 
-				//
+          camera = new THREE.PerspectiveCamera(60, ASPECT, 1, 10000);
+          camera.position.z = 5000;
 
-				window.addEventListener( 'resize', onWindowResize, false );
+          controls = new THREE.OrbitControls(camera);
+          controls.addEventListener('change', render);
 
-			}
+          scene = new THREE.Scene();
 
-			function onWindowResize() {
+          // BEGIN PLOTTING
 
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
+          var scatterPlot = new THREE.Object3D();
+          scene.add(scatterPlot);
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+          // build the coordinate reference axes
 
-				render();
+          scatterPlot.rotation.y = 0.5;
+          function v(x, y, z) {
+              return new THREE.Vector3(x, y, z);
+          }
 
-			}
+          var axGeo = new THREE.Geometry();
+          axGeo.vertices.push(
+              // orthogonal axes
+              v(-3000, 0, 0), v(3000, 0, 0),
+              v(0, -3000, 0), v(0, 3000, 0),
+              v(0, 0, -3000), v(0, 0, 3000)
+              );
 
-			function animate() {
+          var axMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
+          var axLines = new THREE.Line(axGeo, axMat);
+          axLines.type = THREE.Lines;
+          scatterPlot.add(axLines);
 
-				requestAnimationFrame( animate );
-				controls.update();
-
-			}
-
-			function render() {
-
-				renderer.render( scene, camera );
-
-			}
+          //test text with latex
+          var titleX = createText2D('$1000 h^{-1} Mpc$');
+          titleX.position.x = 1000;
+          scatterPlot.add(titleX);
 
 
-		</script>
+          // lights
 
-	</body>
+          light = new THREE.DirectionalLight( 0xffffff );
+          light.position.set( 1, 1, 1 );
+          scene.add( light );
+
+          light = new THREE.DirectionalLight( 0x002288 );
+          light.position.set( -1, -1, -1 );
+          scene.add( light );
+
+          light = new THREE.AmbientLight( 0x222222 );
+          scene.add( light );
+
+
+          // renderer
+
+          renderer = new THREE.WebGLRenderer({antialias: false});
+          renderer.setSize(WIDTH, HEIGHT);
+
+          container = document.getElementById('container');
+          container.appendChild(renderer.domElement);
+
+          //
+
+          window.addEventListener( 'resize', onWindowResize, false );
+
+      }
+
+      function onWindowResize() {
+
+          camera.aspect = ASPECT;
+          camera.updateProjectionMatrix();
+
+          renderer.setSize( WIDTH, HEIGHT);
+
+          render();
+
+      }
+
+      function animate() {
+
+          requestAnimationFrame( animate );
+          controls.update();
+
+      }
+
+      function render() {
+
+          renderer.render( scene, camera );
+
+      }
+
+      // text functions for axes labelling, taken from BasicsOfThreeJS
+
+      function createTextCanvas(text, color, font, size) {
+          size = size || 24;
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var fontStr = (size + 'px ') + (font || 'Arial');
+          ctx.font = fontStr;
+          var w = ctx.measureText(text).width;
+          var h = Math.ceil(size);
+          canvas.width = w;
+          canvas.height = h;
+          ctx.font = fontStr;
+          ctx.fillStyle = color || 'black';
+          ctx.fillText(text, 0, Math.ceil(size*0.8));
+          return canvas;
+      }
+
+      function createText2D(text, color, font, size, segW, segH) {
+          var canvas = createTextCanvas(text, color, font, size);
+          var plane = new THREE.PlaneGeometry(canvas.width, canvas.height, segW, segH);
+          var tex = new THREE.Texture(canvas);
+          tex.needsUpdate = true;
+          var planeMat = new THREE.MeshBasicMaterial({
+              map: tex, color: 0xffffff, transparent: true
+          });
+          var mesh = new THREE.Mesh(plane, planeMat);
+          mesh.scale.set(0.25, 0.25, 0.25);
+          mesh.doubleSided = true;
+          return mesh;
+      }
+
+
+    </script>
+
+  </body>
+
 </html>
