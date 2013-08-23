@@ -56,6 +56,10 @@
 
           scene = new THREE.Scene();
 
+          var scatterPlot = new THREE.Object3D();
+          scene.add(scatterPlot);
+
+
           //test text with latex
           var titleX = createText2D('$1000 h^{-1} Mpc$', 'green', 'Arial', 500);
           titleX.position.x = 1000;
