@@ -87,6 +87,13 @@
 //          titleX.position.x = 1000;
 //          scatterPlot.add(titleX);
 
+
+          // set up resolution parameters for circular parts of axes
+          var circRes = 3600;
+          var circSize = 360 / circRes;
+          var segment;
+
+
           var horiRads = [1000, 2000, 3000];
           var horiCircGeo, horiCircMat, horiCircLine;
 
