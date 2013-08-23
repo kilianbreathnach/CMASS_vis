@@ -1,0 +1,141 @@
+<!DOCTYPE html> <html lang="en">
+
+  <head>
+    <title>CMASS data</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+      body {
+        background-color: #000;
+        margin: 0px;
+        overflow: hidden;
+        }
+    </style>
+  </head>
+
+  <body>
+
+    <div id="container"></div>
+
+    <script src="./three.js/build/three.min.js"></script>
+
+    <script src="./three.js/examples/js/controls/OrbitControls.js"></script>
+
+    <script src="./three.js/examples/js/Detector.js"></script>
+
+    <!-- incorporating LaTeX for some nice axes labels -->
+    <script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
+
+    <script>
+
+      if (! Detector.webgl) Detector.addGetWebGLMessage();
+
+      var WIDTH = window.innerWidth,
+          HEIGHT = window.innerHeight;
+      var ASPECT = WIDTH / HEIGHT;
+
+
+      var container;
+      var camera, controls, scene, renderer;
+      var cross;
+
+      init();
+      animate();
+
+      function init() {
+
+          camera = new THREE.PerspectiveCamera(60, ASPECT, 1, 10000);
+          camera.position.z = 5000;
+
+          controls = new THREE.OrbitControls(camera);
+          controls.addEventListener('change', render);
+
+          scene = new THREE.Scene();
+
+          //test text with latex
+          var titleX = createText2D('$1000 h^{-1} Mpc$', 'green', 'Arial', 500);
+          titleX.position.x = 1000;
+          scatterPlot.add(titleX);
+
+
+
+          // renderer
+
+          renderer = new THREE.WebGLRenderer({antialias: false});
+          renderer.setSize(WIDTH, HEIGHT);
+
+          container = document.getElementById('container');
+          container.appendChild(renderer.domElement);
+
+          //
+
+          window.addEventListener( 'resize', onWindowResize, false );
+
+      }
+
+      function onWindowResize() {
+
+          camera.aspect = ASPECT;
+          camera.updateProjectionMatrix();
+
+          renderer.setSize( WIDTH, HEIGHT);
+
+          render();
+
+      }
+
+      function animate() {
+
+          requestAnimationFrame( animate );
+          controls.update();
+
+      }
+
+      function render() {
+
+          renderer.render( scene, camera );
+
+      }
+
+      // text functions for axes labelling, taken from BasicsOfThreeJS
+
+      function createTextCanvas(text, color, font, size) {
+          size = size || 24;
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var fontStr = (size + 'px ') + (font || 'Arial');
+          ctx.font = fontStr;
+          var w = ctx.measureText(text).width;
+          var h = Math.ceil(size);
+          canvas.width = w;
+          canvas.height = h;
+          ctx.font = fontStr;
+          ctx.fillStyle = color || 'black';
+          ctx.fillText(text, 0, Math.ceil(size*0.8));
+          return canvas;
+      }
+
+      function createText2D(text, color, font, size) {
+          var canvas = createTextCanvas(text, color, font, size);
+          var plane = new THREE.PlaneGeometry(canvas.width, canvas.height);
+          var tex = new THREE.Texture(canvas);
+          tex.needsUpdate = true;
+          var planeMat = new THREE.MeshBasicMaterial({
+              map: tex, color: 0x000000, transparent: true
+          });
+          var mesh = new THREE.Mesh(plane, planeMat);
+          mesh.scale.set(0.25, 0.25, 0.25);
+          mesh.doubleSided = true;
+          return mesh;
+      }
+
+
+    </script>
+
+  </body>
+
+</html>
