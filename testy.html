@@ -83,7 +83,7 @@
           scatterPlot.add(axLines);
 
           //test text with latex
-          var titleX = createText2D('$1000 h^{-1} Mpc$', 0x00FF00);
+          var titleX = createText2D('$1000 h^{-1} Mpc$', 0x00FF00, 'Arial', 50);
           titleX.position.x = 1000;
           scatterPlot.add(titleX);
 
@@ -158,13 +158,13 @@
           return canvas;
       }
 
-      function createText2D(text, color, font, size, segW, segH) {
+      function createText2D(text, color, font, size) {
           var canvas = createTextCanvas(text, color, font, size);
-          var plane = new THREE.PlaneGeometry(canvas.width, canvas.height, segW, segH);
+          var plane = new THREE.PlaneGeometry(canvas.width, canvas.height);
           var tex = new THREE.Texture(canvas);
           tex.needsUpdate = true;
           var planeMat = new THREE.MeshBasicMaterial({
-              map: tex, color: 0xffffff, transparent: true
+              map: tex, color: 0x000000, transparent: true
           });
           var mesh = new THREE.Mesh(plane, planeMat);
           mesh.scale.set(0.25, 0.25, 0.25);
