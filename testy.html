@@ -82,10 +82,29 @@
           axLines.type = THREE.Lines;
           scatterPlot.add(axLines);
 
-          //test text with latex
-          var titleX = createText2D('$1000 h^{-1} Mpc$', 0x00FF00, 'Arial', 50);
-          titleX.position.x = 1000;
-          scatterPlot.add(titleX);
+//          //test text with latex
+//          var titleX = createText2D('$1000 h^{-1} Mpc$', 0x00FF00, 'Arial', 500);
+//          titleX.position.x = 1000;
+//          scatterPlot.add(titleX);
+
+          var horiRads = [1000, 2000, 3000];
+          var horiCircGeo, horiCircMat, horiCircLine;
+
+          for (var rad = 0; rad < horiRads.length; rad++) {
+
+              horiCircGeo = new THREE.Geometry();
+
+              for (var i = 0; i <= circRes; i++) {
+                  segment = ( i * circSize ) * Math.PI / 180;
+                  horiCircGeo.vertices.push(new THREE.Vector3(Math.cos(segment) * horiRads[i], Math.sin(segment) * horiRads[i], 0));
+              }
+
+              horiCircMat = new THREE.LineBasicMaterial({color: 0x00FF00, lineWidth: 1});
+              horiCircLine = new THREE.Line(horiCircGeo, horiCircMat);
+              scatterPlot.add(horiCircLine);
+
+          }
+
 
 
           // lights
